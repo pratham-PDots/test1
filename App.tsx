@@ -18,6 +18,10 @@ function App(): JSX.Element {
   };
 
   useEffect(() => {
+    // Initialize the SDK when the component mounts
+    CameraModule.initSDK();
+
+    // Set up the event listener
     const eventEmitter = new NativeEventEmitter(NativeModules.CameraModule);
     let eventListener = eventEmitter.addListener('did-receive-queue-data', (eventsData: DataType[]) => {
       setEvents(eventsData);
@@ -27,21 +31,24 @@ function App(): JSX.Element {
     return () => {
       eventListener.remove();
     };
-  }, []);
+  }, []); // The empty dependency array ensures that this effect runs only once on mount
 
   const renderHeader = ({ item }: { item: DataType }) => (
     <View style={styles.headerContainer}>
       <Text style={styles.sessionId}>Session ID: {item.session_id}</Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-        {item.images.map((image, index) => (
-          <Image key={index} source={{ uri: `file://${image.uri}` }} style={styles.image} />
-        ))}
-      </View>
     </View>
   );
 
   const renderImage = ({ item }: { item: DataType }) => (
-    <Image source={{ uri: `file://${item.images[0].uri}` }} style={styles.image} />
+    <FlatList
+      data={item.images}
+      keyExtractor={(imageItem) => imageItem.uri}
+      renderItem={({ item: image }) => (
+        <Image source={{ uri: `file://${image.uri}` }} style={styles.image} />
+      )}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+    />
   );
 
   return (
@@ -56,14 +63,10 @@ function App(): JSX.Element {
         data={events}
         keyExtractor={(item) => item.session_id}
         renderItem={({ item }) => (
-          <FlatList
-            ListHeaderComponent={() => renderHeader({ item })}
-            data={[item]}
-            keyExtractor={(imageItem) => imageItem.session_id}
-            renderItem={renderImage}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+          <View>
+            {renderHeader({ item })}
+            {renderImage({ item })}
+          </View>
         )}
       />
     </SafeAreaView>

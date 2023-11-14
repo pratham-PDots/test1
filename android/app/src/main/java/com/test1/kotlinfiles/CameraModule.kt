@@ -72,8 +72,12 @@ class CameraModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     }
 
     @ReactMethod
-    fun openCam() {
+    fun initSDK() {
         CameraSDK.init(reactApplicationContext, "gs://shelfwatch-app-dev")
+    }
+
+    @ReactMethod
+    fun openCam() {
          val uploadParams = JSONObject("""
                         {
                             "shop_id": 1288,
