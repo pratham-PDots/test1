@@ -72,42 +72,33 @@ class CameraModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     }
 
     @ReactMethod
-    fun initSDK() {
-        CameraSDK.init(reactApplicationContext, "gs://shelfwatch-app-dev")
+    fun initSDK(bucket: String) {
+        CameraSDK.init(reactApplicationContext, bucket)
     }
 
     @ReactMethod
-    fun openCam() {
-         val uploadParams = JSONObject("""
-                        {
-                            "shop_id": 1288,
-                            "project_id": "79b7c955-f253-4f19-b1ab-710585614dd4",
-                            "td_version_id": 178,
-                            "shelf_image_id": null,
-                            "asset_image_id": null,
-                            "shelf_type": "Main Aisle",
-                            "category_id": 309,
-                            "user_id": 133,
-                            "isConnected": true,
-                            "sn_image_type": "skus",
-                            "image_type": "single",
-                            "seq_no": 1,
-                            "level": 1,
-                            "last_image_flag": 1,
-                            "uploadOnlyOnWifi": 0,
-                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71"
-                        }
-                        """)
+    fun openCam(orientation: String,
+                widthPercentage: String,
+                uploadParams: String,
+                allowCrop: Boolean,
+                allowBlurCheck: Boolean,
+                referenceUrl: String,
+                resolution: String,
+                uploadFrom: String,
+                isRetake: Boolean = false,
+                zoomLevel: Double = 1.0) {
         CameraSDK.startCamera(
             context = reactApplicationContext,
-            orientation = "portrait",
-            widthPercentage = 50,
-            uploadParams = uploadParams,
-            allowCrop = true,
-            allowBlurCheck = true,
-            referenceUrl = "",
-            resolution = 2048,
-            uploadFrom = "Shelfwatch"
+            orientation = orientation,
+            widthPercentage = widthPercentage.toInt(),
+            uploadParams = JSONObject(uploadParams),
+            allowCrop = allowCrop,
+            allowBlurCheck = allowBlurCheck,
+            referenceUrl = referenceUrl,
+            resolution = resolution.toInt(),
+            uploadFrom = uploadFrom,
+            isRetake = isRetake,
+            zoomLevel = zoomLevel
         )
     }
 
